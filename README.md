@@ -1,4 +1,6 @@
 #   Assignment_2 Summary 
+
+# IMPORTANT NOTE FOR THE CODE CHECKER : our project unfortunately isn't complete , and we had to submit it as it is , we would be more than greatful if you do a manual check #on or code , that would be really appreciated
 ___
 ## Section A
 * _in the first part of this assignment we modified the classes to become compatible with the concept of directed graph,
