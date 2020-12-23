@@ -1,5 +1,5 @@
 package gameClient;
-
+///
 import api.directed_weighted_graph;
 import api.edge_data;
 import api.geo_location;
@@ -78,7 +78,9 @@ public class MyFrame extends JFrame{
 		List<CL_Pokemon> fs = _ar.getPokemons();
 		if(fs!=null) {
 		Iterator<CL_Pokemon> itr = fs.iterator();
-		
+			for (int i = 0; i <5 ; i++) {
+				check_res();
+			}
 		while(itr.hasNext()) {
 			
 			CL_Pokemon f = itr.next();
@@ -96,6 +98,10 @@ public class MyFrame extends JFrame{
 		}
 		}
 	}
+
+	private void check_res() {
+	}
+
 	private void drawAgants(Graphics g) {
 		List<CL_Agent> rs = _ar.getAgents();
 	//	Iterator<OOP_Point3D> itr = rs.iterator();

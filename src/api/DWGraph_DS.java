@@ -99,4 +99,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 		return m_mc;
 	}
 
+	public HashMap<Integer, HashMap<Integer, edge_data>> getEdges() {
+		return this.m_edges;
+	}
 }

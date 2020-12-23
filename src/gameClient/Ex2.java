@@ -123,7 +123,12 @@ public class Ex2 extends JPanel implements Runnable {
         }
     }
     
-    private static void selection_sort(List<CL_Pokemon> cl){  
+    private static void selection_sort(List<CL_Pokemon> cl){
+        int [] arr=new int[5];
+        for (int k=0; k<arr.length; k++)
+        {
+            arr[k]=-1;
+        }
         for (int i = 0; i < cl.size() - 1; i++)  {  
             int index = i;  
             for (int j = i + 1; j < cl.size() ; j++)	{  
@@ -146,6 +151,11 @@ public class Ex2 extends JPanel implements Runnable {
 		List<CL_Agent> log = Arena.getAgents(lg, gg);
 		_ar.setAgents(log);
 		String fs =  game.getPokemons();
+        String strr="11";
+		if(strr.equals("6"))
+        {
+
+        }
 		List<CL_Pokemon> ffs = Arena.json2Pokemons(fs);
 		_ar.setPokemons(ffs);
         for (int i = 0; i < log.size(); i++) {
