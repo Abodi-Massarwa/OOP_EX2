@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 public class myFrame extends JFrame {
@@ -31,7 +32,7 @@ public class myFrame extends JFrame {
     
     public myFrame(String str, int level) {
         super(str);
-        this.setSize(new Dimension( 350, 400));
+        this.setSize(new Dimension( 350, 300));
         this.setLocationRelativeTo(null);
         this.setResizable(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -56,9 +57,7 @@ public class myFrame extends JFrame {
     }
 
     private void updateFrame() {
-        Range rx = new Range(20, this.getWidth() - 50);
-        Range ry = new Range(this.getHeight() - 150, 150);
-        Range2D frame = new Range2D(rx, ry);
+        Range2D frame = new Range2D(new Range(20, this.getWidth() - 50),new Range(this.getHeight() - 150, 150));
         if (this._arena != null) {
             directed_weighted_graph g = _arena.getGraph();
             _w2f = Arena.w2f(g, frame);
@@ -66,8 +65,7 @@ public class myFrame extends JFrame {
             this.setVisible(true);
         }
     }
-    public void paint(Graphics g) {
-    	
+    public void paint(Graphics g) {	
         this.add(new gamePanel(this._w2f));
         updateFrame();
         this.revalidate();
@@ -103,126 +101,86 @@ public class myFrame extends JFrame {
         public void paintComponent(Graphics g) {
             Graphics2D gg = (Graphics2D) g;
             super.paintComponent(g);
-            
-            // add background image
-            BufferedImage img = null;
-            ImageObserver observer = null;
-			try { img = ImageIO.read(new File("data/background.png"));} catch (IOException e) {}
-			g.drawImage(img, 0, 0, 1300, 800, observer);
-			
-			
             if(_arena!=null && _w2f != null) {
-                draw_graph(gg);
+            	drawGraph(gg);
                 drawPokemons(gg);
-                drawAgents(gg);
-                draw_scoreText(gg);
+                drawAgants(gg);
             }
             
             this.revalidate();
             this.setVisible(true);
         }
 
-        public void draw_scoreText(Graphics g) {
-            int grade = 0;
-                List<CL_Agent> agents_list = _arena.getAgents();
-                for(int agent_id=0;agents_list != null && agent_id < agents_list.size();agent_id++) {
-                	g.setColor(Color.black);
-                    g.drawString("Agent id: " + agents_list.get(agent_id).getID() + "  -", 10, 20 + agent_id * 21);
-                    g.drawString("score:  " + agents_list.get(agent_id).getValue(), 115, 20 + agent_id * 21);
-                    grade += agents_list.get(agent_id).getValue();
-                }
+    	private void drawGraph(Graphics g) {
+    		directed_weighted_graph gg = _arena.getGraph();
+    		Iterator<node_data> iter = gg.getV().iterator();
+    		while(iter.hasNext()) {
+    			node_data n = iter.next();
+    			g.setColor(Color.blue);
+    			drawNode(n,5,g);
+    			Iterator<edge_data> itr = gg.getE(n.getKey()).iterator();
+    			while(itr.hasNext()) {
+    				edge_data e = itr.next();
+    				g.setColor(Color.gray);
+    				drawEdge(e, g);
+    			}
+    		}
+    	}
+        
+    	private void drawPokemons(Graphics g) {
+    		List<CL_Pokemon> fs = _arena.getPokemons();
+    		if(fs!=null) {
+    		Iterator<CL_Pokemon> itr = fs.iterator();
+    		
+    		while(itr.hasNext()) {
+    			
+    			CL_Pokemon f = itr.next();
+    			Point3D c = f.getLocation();
+    			int r=10;
+    			g.setColor(Color.green);
+    			if(f.getType()<0) {g.setColor(Color.orange);}
+    			if(c!=null) {
 
-                
-            // score text   
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setColor(Color.magenta.darker().darker().darker());
-            g2.drawString("Game number: " + game_number, 10, 615);
-            g2.drawString("Total score: " + grade, 10, 590);
-            g2.setColor(Color.black);
-            
-            // time text
-            Graphics2D g3 = (Graphics2D) g;
-            g3.setColor(Color.magenta.darker().darker().darker());
-            g3.drawString("Remaining time:  " +time, 10, 650);
-            g3.setColor(Color.blue.darker().darker().darker());
-            
-        }
+    				geo_location fp = this._w2f.world2frame(c);
+    				g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
+    			//	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
+    				
+    			}
+    		}
+    		}
+    	}
+    	private void drawAgants(Graphics g) {
+    		List<CL_Agent> rs = _arena.getAgents();
+    	//	Iterator<OOP_Point3D> itr = rs.iterator();
+    		g.setColor(Color.red);
+    		int i=0;
+    		while(rs!=null && i<rs.size()) {
+    			geo_location c = rs.get(i).getLocation();
+    			int r=8;
+    			i++;
+    			if(c!=null) {
+
+    				geo_location fp = this._w2f.world2frame(c);
+    				g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
+    			}
+    		}
+    	}
         
-        // draw the graph (nodes + edges) using draw_node and draw_edge functions
-        private void draw_graph(Graphics g) {
-        		// Finally!! draw the edges
-                for(node_data n : _arena.getGraph().getV()) {
-                    g.setColor(Color.black);
-                    if(this._w2f != null)
-                    draw_node(n, g);
-                    // Finally!! draw the edges
-                    for(edge_data e : _arena.getGraph().getE(n.getKey())) {
-                        g.setColor(Color.black);
-                        if (this._w2f != null) 
-                        draw_edge(e, g);
-                    }
-                }
-        }
-        
-        // draw jellyfish icons for each pokemon  
-        private void drawPokemons(Graphics g) {
-            BufferedImage img = null;
-                List<CL_Pokemon> Pokemons_list = _arena.getPokemons();
-                if (Pokemons_list != null) {
-                	 // draw each pokemon in the list 
-                    for(CL_Pokemon p : Pokemons_list) {
-                        Point3D pokemon_location = p.getLocation(); // get the location of each pokemon..
-                        if (pokemon_location != null) {
-                        if (p.getType() < 0) {
-                        	// add pokemon icon  
-                            try { img = ImageIO.read(new File("data/jellyfish.png")); } catch (IOException e) {}
-                        }
-                            if (this._w2f != null) 
-                                g.drawImage(img, (int) _w2f.world2frame(pokemon_location).x() - 21, (int) _w2f.world2frame(pokemon_location).y() - 21, this); 
-                        }
-                    }
-                }
-        }
-        
-     // draw spongebob icons for each agent 
-        private void drawAgents(Graphics g) {
-                List<CL_Agent> agents_list = _arena.getAgents();
-                for(int i=0; i < agents_list.size() && agents_list.get(i).getLocation() != null;i++) {
-                    geo_location agent_location = agents_list.get(i).getLocation();
-                    
-                    geo_location f_location = this._w2f.world2frame(agent_location);
-                    
-                    // adding spongebob icon to each pokemon location using geo location
-                    BufferedImage img = null;
-                    try { img = ImageIO.read(new File("data/spongebob.png"));} catch (IOException e) {}
-                    g.drawImage(img, (int) f_location.x() - 15, (int) f_location.y() - 15, this);
-                }
-            this.revalidate();
-        }
-        
-        // draw edge line using src and dest for given edge..
-        private void draw_edge(edge_data e, Graphics g) {
-            directed_weighted_graph gg = _arena.getGraph();
-            geo_location s = gg.getNode(e.getSrc()).getLocation();
-            geo_location d = gg.getNode(e.getDest()).getLocation();
-            geo_location s0 = this._w2f.world2frame(s);
-            geo_location d0 = this._w2f.world2frame(d);
-            ((Graphics2D) g).setStroke(new BasicStroke(3));
-            g.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
-            g.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
-            this.paintComponents(g);
-            this.revalidate();
-        }
-        
-        // draw fill oval using given node position
-        private void draw_node(node_data n, Graphics g) {
-            if ( n.getLocation() != null) {
-                geo_location fp = this._w2f.world2frame( n.getLocation());
-                g.fillOval((int) fp.x() - 5, (int) fp.y() - 5, 7, 7);
-                g.setFont(new Font("David", Font.PLAIN, 15));
-                g.drawString("" + n.getKey(), (int) fp.x(), (int) fp.y() - 2 * 5);
-            }
-        }
+    	private void drawNode(node_data n, int r, Graphics g) {
+    		geo_location pos = n.getLocation();
+    		geo_location fp = this._w2f.world2frame(pos);
+    		g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
+    		g.drawString(""+n.getKey(), (int)fp.x(), (int)fp.y()-4*r);
+    	}
+    	private void drawEdge(edge_data e, Graphics g) {
+    		directed_weighted_graph gg = _arena.getGraph();
+    		geo_location s = gg.getNode(e.getSrc()).getLocation();
+    		geo_location d = gg.getNode(e.getDest()).getLocation();
+    		geo_location s0 = this._w2f.world2frame(s);
+    		geo_location d0 = this._w2f.world2frame(d);
+    		g.drawLine((int)s0.x(), (int)s0.y(), (int)d0.x(), (int)d0.y());
+    	//	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
+    	}
 
     }
 }
