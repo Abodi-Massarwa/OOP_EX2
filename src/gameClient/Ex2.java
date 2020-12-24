@@ -102,7 +102,6 @@ public class Ex2 extends JPanel implements Runnable {
             line = new JSONObject(info);
             JSONObject gameData = line.getJSONObject("GameServer");
             int agents = gameData.getInt("agents");
-            System.out.println(info);
             if(pathN=="17") {
                 pathN="13";
             }
