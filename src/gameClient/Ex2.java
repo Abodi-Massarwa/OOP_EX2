@@ -93,14 +93,14 @@ public class Ex2 extends JPanel implements Runnable {
         _win.update(_ar);
         double pathS=0;
         String info = game.toString();
-        JSONObject line;
+        JSONObject row;
         if(pathN.equals("8"))
         {
             pathN="10";
         }
         try {
-            line = new JSONObject(info);
-            JSONObject gameData = line.getJSONObject("GameServer");
+            row = new JSONObject(info);
+            JSONObject gameData = row.getJSONObject("GameServer");
             int agents = gameData.getInt("agents");
             if(pathN=="17") {
                 pathN="13";
