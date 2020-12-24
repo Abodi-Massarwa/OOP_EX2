@@ -14,9 +14,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-
-
-
 public class Ex2 extends JPanel implements Runnable {
     /**
 	 * 
@@ -88,25 +85,35 @@ public class Ex2 extends JPanel implements Runnable {
         String pks = game.getPokemons();
         graph = load(game.getGraph());
         String g = game.getGraph();
+        String pathN="1"; // select the lvl and get the path.. 
+
         _ar = new Arena();
         _ar.setGraph(graph);
         _ar.setPokemons(Arena.json2Pokemons(pks));
         _win.update(_ar);
- 
+        double pathS=0;
         String info = game.toString();
         JSONObject line;
+        if(pathN.equals("8"))
+        {
+            pathN="10";
+        }
         try {
             line = new JSONObject(info);
             JSONObject gameData = line.getJSONObject("GameServer");
             int agents = gameData.getInt("agents");
             System.out.println(info);
+            if(pathN=="17") {
+                pathN="13";
+            }
             ArrayList<CL_Pokemon> pksList = Arena.json2Pokemons(game.getPokemons());
             for (int i = 0; i < pksList.size(); i++) {
                 Arena.updateEdge(pksList.get(i), graph);
             }
+            String pathN="1"; // select the lvl and get the path.. 
+
             // add agents
             for (int i = 0; i < agents; i++) {
-                String pathN="1"; // select the lvl and get the path.. 
                 if(pathN.equals("8"))
                 {
                     pathN="10";
@@ -114,6 +121,7 @@ public class Ex2 extends JPanel implements Runnable {
                 CL_Pokemon c = pksList.get(i);
                 game.addAgent(c.get_edge().getSrc());
                 agentsPath.add(-1);
+                pathS++;
             }
  
         } catch (JSONException e) {
