@@ -44,7 +44,6 @@ public class Ex2 extends JPanel implements Runnable {
         }
         else {
             _win = new myFrame("game", lvl);
-        	_win.initLogin();
         }
     }
 
@@ -76,57 +75,6 @@ public class Ex2 extends JPanel implements Runnable {
         System.exit(0);
     }
 
-    /**
-     * init the game 
-     * @param game - game service
-     */
-    private void init(game_service game) {
-        _win = new myFrame("game start", 1000, 900, lvl);
-        String pks = game.getPokemons();
-        graph = load(game.getGraph());
-        String g = game.getGraph();
-        String pathN="1"; // select the lvl and get the path.. 
-
-        _ar = new Arena();
-        _ar.setGraph(graph);
-        _ar.setPokemons(Arena.json2Pokemons(pks));
-        _win.update(_ar);
-        double pathS=0;
-        String info = game.toString();
-        JSONObject row;
-        if(pathN.equals("8"))
-        {
-            pathN="10";
-        }
-        try {
-            row = new JSONObject(info);
-            JSONObject gameData = row.getJSONObject("GameServer");
-            int agents = gameData.getInt("agents");
-            if(pathN=="17") {
-                pathN="13";
-            }
-            ArrayList<CL_Pokemon> pksList = Arena.json2Pokemons(game.getPokemons());
-            for (int i = 0; i < pksList.size(); i++) {
-                Arena.updateEdge(pksList.get(i), graph);
-            }
-            String pathN="1"; // select the lvl and get the path.. 
-
-            // add agents
-            for (int i = 0; i < agents; i++) {
-                if(pathN.equals("8"))
-                {
-                    pathN="10";
-                }
-                CL_Pokemon c = pksList.get(i);
-                game.addAgent(c.get_edge().getSrc());
-                agentsPath.add(-1);
-                pathS++;
-            }
- 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
 	private static void moveAgents(game_service game, directed_weighted_graph gg) {
 		String lg = game.move();
